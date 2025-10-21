@@ -1,0 +1,749 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    
+    
+    
+    
+
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[1]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Step 1 – Install dependencies and import libraries</span>
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">clone_model</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">TreasureMaze</span> <span class="kn">import</span> <span class="n">TreasureMaze</span>
+<span class="kn">from</span> <span class="nn">GameExperience</span> <span class="kn">import</span> <span class="n">GameExperience</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>Requirement already satisfied: numpy==1.26.4 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (1.26.4)
+Requirement already satisfied: keras in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (3.11.3)
+Requirement already satisfied: tensorflow==2.19.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (2.19.0)
+Requirement already satisfied: absl-py&gt;=1.0.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2.3.1)
+Requirement already satisfied: astunparse&gt;=1.6.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (1.6.3)
+Requirement already satisfied: flatbuffers&gt;=24.3.25 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (25.9.23)
+Requirement already satisfied: gast!=0.5.0,!=0.5.1,!=0.5.2,&gt;=0.2.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (0.6.0)
+Requirement already satisfied: google-pasta&gt;=0.1.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (0.2.0)
+Requirement already satisfied: libclang&gt;=13.0.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (18.1.1)
+Requirement already satisfied: opt-einsum&gt;=2.3.2 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (3.4.0)
+Requirement already satisfied: packaging in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (23.0)
+Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,&lt;6.0.0dev,&gt;=3.20.3 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (5.29.5)
+Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2.30.0)
+Requirement already satisfied: setuptools in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (65.5.0)
+Requirement already satisfied: six&gt;=1.12.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (1.16.0)
+Requirement already satisfied: termcolor&gt;=1.1.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (3.1.0)
+Requirement already satisfied: typing-extensions&gt;=3.6.6 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (4.15.0)
+Requirement already satisfied: wrapt&gt;=1.11.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (1.17.3)
+Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (1.75.1)
+Requirement already satisfied: tensorboard~=2.19.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2.19.0)
+Requirement already satisfied: h5py&gt;=3.11.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (3.14.0)
+Requirement already satisfied: ml-dtypes&lt;1.0.0,&gt;=0.5.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (0.5.3)
+Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (0.37.1)
+Requirement already satisfied: rich in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from keras-&gt;-r requirements.txt (line 2)) (14.2.0)
+Requirement already satisfied: namex in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from keras-&gt;-r requirements.txt (line 2)) (0.1.0)
+Requirement already satisfied: optree in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from keras-&gt;-r requirements.txt (line 2)) (0.17.0)
+Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (0.45.1)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2.1.1)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (3.4)
+Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2.0.2)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2023.5.7)
+Requirement already satisfied: markdown&gt;=2.6.8 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorboard~=2.19.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (3.9)
+Requirement already satisfied: tensorboard-data-server&lt;0.8.0,&gt;=0.7.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorboard~=2.19.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (0.7.2)
+Requirement already satisfied: werkzeug&gt;=1.0.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from tensorboard~=2.19.0-&gt;tensorflow==2.19.0-&gt;-r requirements.txt (line 3)) (2.0.0)
+Requirement already satisfied: markdown-it-py&gt;=2.2.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from rich-&gt;keras-&gt;-r requirements.txt (line 2)) (4.0.0)
+Requirement already satisfied: pygments&lt;3.0.0,&gt;=2.13.0 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from rich-&gt;keras-&gt;-r requirements.txt (line 2)) (2.15.1)
+Requirement already satisfied: mdurl~=0.1 in /home/codio/.pyenv/versions/3.11.2/lib/python3.11/site-packages (from markdown-it-py&gt;=2.2.0-&gt;rich-&gt;keras-&gt;-r requirements.txt (line 2)) (0.1.2)
+
+<span class="ansi-bold">[</span><span class="ansi-blue-fg">notice</span><span class="ansi-bold">]</span> A new release of pip is available: <span class="ansi-red-fg">23.1.2</span> -&gt; <span class="ansi-green-fg">25.2</span>
+<span class="ansi-bold">[</span><span class="ansi-blue-fg">notice</span><span class="ansi-bold">]</span> To update, run: <span class="ansi-green-fg">pip install --upgrade pip</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>2025-10-19 18:01:55.632739: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-10-19 18:01:55.636488: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-10-19 18:01:55.642322: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2025-10-19 18:01:55.655054: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1760896915.680901  221856 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1760896915.687684  221856 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1760896915.704947  221856 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1760896915.704970  221856 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1760896915.704972  221856 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1760896915.704974  221856 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+2025-10-19 18:01:55.710337: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput">
+<p>The following code block contains an 8x8 matrix that will be used as a maze object:</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">maze</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">],</span>
+    <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">]</span>
+<span class="p">])</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[3]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Actions (must be defined BEFORE any qmaze.act(...) call)</span>
+<span class="n">LEFT</span>  <span class="o">=</span> <span class="mi">0</span>
+<span class="n">UP</span>    <span class="o">=</span> <span class="mi">1</span>
+<span class="n">RIGHT</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">DOWN</span>  <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># Exploration (you can start at 1.0 for training, or 0.1 for quick demos)</span>
+<span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="n">actions_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">LEFT</span><span class="p">:</span>  <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+    <span class="n">UP</span><span class="p">:</span>    <span class="s1">&#39;up&#39;</span><span class="p">,</span>
+    <span class="n">RIGHT</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+    <span class="n">DOWN</span><span class="p">:</span>  <span class="s1">&#39;down&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">num_actions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions_dict</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[4]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Quick one-step demo to confirm actions/constants work</span>
+<span class="n">qmaze</span> <span class="o">=</span> <span class="n">TreasureMaze</span><span class="p">(</span><span class="n">maze</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">DOWN</span><span class="p">)</span>  
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;reward =&quot;</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="s2">&quot;| status =&quot;</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>reward = -0.04 | status = not_over
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[5]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">clone_model</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+
+<span class="k">def</span> <span class="nf">build_model</span><span class="p">(</span><span class="n">maze</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">maze</span><span class="o">.</span><span class="n">size</span><span class="p">,)))</span>     
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">))</span> <span class="c1"># L, U, R, D</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">maze</span><span class="p">)</span>
+<span class="n">target_model</span> <span class="o">=</span> <span class="n">clone_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">target_model</span><span class="o">.</span><span class="n">set_weights</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_weights</span><span class="p">())</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>E0000 00:00:1760896920.324512  221856 cuda_executor.cc:1228] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1760896920.328440  221856 gpu_device.cc:2341] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[6]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Experience replay buffer (works with both class signatures)</span>
+<span class="kn">from</span> <span class="nn">GameExperience</span> <span class="kn">import</span> <span class="n">GameExperience</span>
+
+<span class="n">MAX_MEMORY</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">maze</span><span class="o">.</span><span class="n">size</span>  <span class="c1"># reasonable size for 8x8</span>
+<span class="n">DISCOUNT</span>   <span class="o">=</span> <span class="mf">0.95</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Newer template expects (model, target_model, ...)</span>
+    <span class="n">experience</span> <span class="o">=</span> <span class="n">GameExperience</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target_model</span><span class="p">,</span> <span class="n">max_memory</span><span class="o">=</span><span class="n">MAX_MEMORY</span><span class="p">,</span> <span class="n">discount</span><span class="o">=</span><span class="n">DISCOUNT</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+    <span class="c1"># Older template expects only (model, ...)</span>
+    <span class="n">experience</span> <span class="o">=</span> <span class="n">GameExperience</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_memory</span><span class="o">=</span><span class="n">MAX_MEMORY</span><span class="p">,</span> <span class="n">discount</span><span class="o">=</span><span class="n">DISCOUNT</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Replay buffer ready. max_memory =&quot;</span><span class="p">,</span> <span class="n">MAX_MEMORY</span><span class="p">,</span> <span class="s2">&quot;| discount =&quot;</span><span class="p">,</span> <span class="n">DISCOUNT</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>Replay buffer ready. max_memory = 512 | discount = 0.95
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[7]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Q-training (DQN with replay + target network)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">qtrain</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target_model</span><span class="p">,</span> <span class="n">experience</span><span class="p">,</span> <span class="n">maze</span><span class="p">,</span>
+           <span class="n">n_epoch</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+           <span class="n">target_update_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a DQN agent to reach the treasure.</span>
+<span class="sd">    Uses ε-greedy exploration, experience replay, and a target network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">epsilon</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># fresh episode</span>
+        <span class="n">qmaze</span> <span class="o">=</span> <span class="n">TreasureMaze</span><span class="p">(</span><span class="n">maze</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">observe</span><span class="p">()</span>          <span class="c1"># shape: (1, maze.size)</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">last_status</span> <span class="o">=</span> <span class="s1">&#39;not_over&#39;</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="c1"># valid actions (fallback to all 4 if method not available)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">valid</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">valid_actions</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+                    <span class="n">valid</span> <span class="o">=</span> <span class="p">[</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">UP</span><span class="p">,</span> <span class="n">RIGHT</span><span class="p">,</span> <span class="n">DOWN</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">valid</span> <span class="o">=</span> <span class="p">[</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">UP</span><span class="p">,</span> <span class="n">RIGHT</span><span class="p">,</span> <span class="n">DOWN</span><span class="p">]</span>
+
+            <span class="c1"># ε-greedy action</span>
+            <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q_vals</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">valid</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">q_vals</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+            <span class="c1"># step</span>
+            <span class="n">s_next</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">last_status</span> <span class="o">=</span> <span class="n">status</span>
+
+            <span class="c1"># store transition</span>
+            <span class="n">experience</span><span class="o">.</span><span class="n">remember</span><span class="p">([</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s_next</span><span class="p">,</span> <span class="n">status</span><span class="p">])</span>
+
+            <span class="c1"># sample minibatch + update</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="n">experience</span><span class="o">.</span><span class="n">memory</span>
+            <span class="k">if</span> <span class="n">mem</span><span class="p">:</span>
+                <span class="n">batch</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">mem</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mem</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">))</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">sb</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">rb</span><span class="p">,</span> <span class="n">snb</span><span class="p">,</span> <span class="n">statb</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+                    <span class="n">target</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">sb</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">statb</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;win&#39;</span><span class="p">,</span> <span class="s1">&#39;lose&#39;</span><span class="p">):</span>
+                        <span class="n">target</span><span class="p">[</span><span class="n">ab</span><span class="p">]</span> <span class="o">=</span> <span class="n">rb</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">q_next</span> <span class="o">=</span> <span class="n">target_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">snb</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">target</span><span class="p">[</span><span class="n">ab</span><span class="p">]</span> <span class="o">=</span> <span class="n">rb</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">q_next</span><span class="p">))</span>
+                    <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sb</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># sb is shape (1, N)</span>
+                    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># advance</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s_next</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;win&#39;</span><span class="p">,</span> <span class="s1">&#39;lose&#39;</span><span class="p">):</span>
+                <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># decay ε and sync target</span>
+        <span class="k">if</span> <span class="n">epsilon</span> <span class="o">&gt;</span> <span class="mf">0.05</span><span class="p">:</span>
+            <span class="n">epsilon</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="mf">0.995</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="n">target_update_freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">target_model</span><span class="o">.</span><span class="n">set_weights</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_weights</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> | epsilon=</span><span class="si">{</span><span class="n">epsilon</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | last_status=</span><span class="si">{</span><span class="n">last_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[8]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Short sanity training (increase n_epoch later for better policy)</span>
+<span class="n">seconds</span> <span class="o">=</span> <span class="n">qtrain</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target_model</span><span class="p">,</span> <span class="n">experience</span><span class="p">,</span> <span class="n">maze</span><span class="p">,</span>
+                 <span class="n">n_epoch</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+                 <span class="n">target_update_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training finished.&quot;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[8], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135);"># Short sanity training (increase n_epoch later for better policy)</span>
+<span class="ansi-green-fg">----&gt; 2</span> seconds <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg">qtrain</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">target_model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">experience</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">maze</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span class="ansi-yellow-bg">                 </span><span class="ansi-yellow-bg">n_epoch</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">120</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">batch_size</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">32</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">gamma</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">0.95</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span> <span class="ansi-yellow-bg">                 </span><span class="ansi-yellow-bg">target_update_freq</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">10</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">verbose</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0);">True</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span> <span style="color: rgb(0,135,0);">print</span>(<span style="color: rgb(175,0,0);">&quot;</span><span style="color: rgb(175,0,0);">Training finished.</span><span style="color: rgb(175,0,0);">&quot;</span>)
+
+Cell <span class="ansi-green-fg">In[7], line 50</span>, in <span class="ansi-cyan-fg">qtrain</span><span class="ansi-blue-fg">(model, target_model, experience, maze, n_epoch, batch_size, gamma, target_update_freq, verbose)</span>
+<span class="ansi-green-intense-fg ansi-bold">     48</span> X, y <span style="color: rgb(98,98,98);">=</span> [], []
+<span class="ansi-green-intense-fg ansi-bold">     49</span> <span class="ansi-bold" style="color: rgb(0,135,0);">for</span> sb, ab, rb, snb, statb <span class="ansi-bold" style="color: rgb(175,0,255);">in</span> batch:
+<span class="ansi-green-fg">---&gt; 50</span>     target <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">predict</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">sb</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">verbose</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">0</span><span class="ansi-yellow-bg">)</span>[<span style="color: rgb(98,98,98);">0</span>]
+<span class="ansi-green-intense-fg ansi-bold">     51</span>     <span class="ansi-bold" style="color: rgb(0,135,0);">if</span> statb <span class="ansi-bold" style="color: rgb(175,0,255);">in</span> (<span style="color: rgb(175,0,0);">&#39;</span><span style="color: rgb(175,0,0);">win</span><span style="color: rgb(175,0,0);">&#39;</span>, <span style="color: rgb(175,0,0);">&#39;</span><span style="color: rgb(175,0,0);">lose</span><span style="color: rgb(175,0,0);">&#39;</span>):
+<span class="ansi-green-intense-fg ansi-bold">     52</span>         target[ab] <span style="color: rgb(98,98,98);">=</span> rb
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py:117</span>, in <span class="ansi-cyan-fg">filter_traceback.&lt;locals&gt;.error_handler</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    115</span> filtered_tb <span style="color: rgb(98,98,98);">=</span> <span class="ansi-bold" style="color: rgb(0,135,0);">None</span>
+<span class="ansi-green-intense-fg ansi-bold">    116</span> <span class="ansi-bold" style="color: rgb(0,135,0);">try</span>:
+<span class="ansi-green-fg">--&gt; 117</span>     <span class="ansi-bold" style="color: rgb(0,135,0);">return</span> <span class="ansi-yellow-bg">fn</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    118</span> <span class="ansi-bold" style="color: rgb(0,135,0);">except</span> <span class="ansi-bold" style="color: rgb(215,95,95);">Exception</span> <span class="ansi-bold" style="color: rgb(0,135,0);">as</span> e:
+<span class="ansi-green-intense-fg ansi-bold">    119</span>     filtered_tb <span style="color: rgb(98,98,98);">=</span> _process_traceback_frames(e<span style="color: rgb(98,98,98);">.</span>__traceback__)
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py:505</span>, in <span class="ansi-cyan-fg">TensorFlowTrainer.predict</span><span class="ansi-blue-fg">(self, x, batch_size, verbose, steps, callbacks)</span>
+<span class="ansi-green-intense-fg ansi-bold">    500</span> <span style="color: rgb(175,0,255);">@traceback_utils</span><span style="color: rgb(98,98,98);">.</span>filter_traceback
+<span class="ansi-green-intense-fg ansi-bold">    501</span> <span class="ansi-bold" style="color: rgb(0,135,0);">def</span> <span style="color: rgb(0,0,255);">predict</span>(
+<span class="ansi-green-intense-fg ansi-bold">    502</span>     <span style="color: rgb(0,135,0);">self</span>, x, batch_size<span style="color: rgb(98,98,98);">=</span><span class="ansi-bold" style="color: rgb(0,135,0);">None</span>, verbose<span style="color: rgb(98,98,98);">=</span><span style="color: rgb(175,0,0);">&quot;</span><span style="color: rgb(175,0,0);">auto</span><span style="color: rgb(175,0,0);">&quot;</span>, steps<span style="color: rgb(98,98,98);">=</span><span class="ansi-bold" style="color: rgb(0,135,0);">None</span>, callbacks<span style="color: rgb(98,98,98);">=</span><span class="ansi-bold" style="color: rgb(0,135,0);">None</span>
+<span class="ansi-green-intense-fg ansi-bold">    503</span> ):
+<span class="ansi-green-intense-fg ansi-bold">    504</span>     <span style="color: rgb(95,135,135);"># Create an iterator that yields batches of input data.</span>
+<span class="ansi-green-fg">--&gt; 505</span>     epoch_iterator <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg">TFEpochIterator</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">    506</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">x</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg">x</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    507</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">batch_size</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg">batch_size</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    508</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">steps_per_epoch</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg">steps</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    509</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">shuffle</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0);">False</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    510</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">distribute_strategy</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">distribute_strategy</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    511</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">steps_per_execution</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">steps_per_execution</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    512</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    514</span>     <span style="color: rgb(95,135,135);"># Container that configures and calls callbacks.</span>
+<span class="ansi-green-intense-fg ansi-bold">    515</span>     <span class="ansi-bold" style="color: rgb(0,135,0);">if</span> <span class="ansi-bold" style="color: rgb(175,0,255);">not</span> <span style="color: rgb(0,135,0);">isinstance</span>(callbacks, callbacks_module<span style="color: rgb(98,98,98);">.</span>CallbackList):
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/keras/src/backend/tensorflow/trainer.py:728</span>, in <span class="ansi-cyan-fg">TFEpochIterator.__init__</span><span class="ansi-blue-fg">(self, distribute_strategy, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    726</span> <span style="color: rgb(0,135,0);">super</span>()<span style="color: rgb(98,98,98);">.</span><span style="color: rgb(0,0,255);">__init__</span>(<span style="color: rgb(98,98,98);">*</span>args, <span style="color: rgb(98,98,98);">*</span><span style="color: rgb(98,98,98);">*</span>kwargs)
+<span class="ansi-green-intense-fg ansi-bold">    727</span> <span style="color: rgb(0,135,0);">self</span><span style="color: rgb(98,98,98);">.</span>_distribute_strategy <span style="color: rgb(98,98,98);">=</span> distribute_strategy
+<span class="ansi-green-fg">--&gt; 728</span> dataset <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">data_adapter</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">get_tf_dataset</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    729</span> <span class="ansi-bold" style="color: rgb(0,135,0);">if</span> <span class="ansi-bold" style="color: rgb(175,0,255);">not</span> <span style="color: rgb(0,135,0);">isinstance</span>(dataset, tf<span style="color: rgb(98,98,98);">.</span>distribute<span style="color: rgb(98,98,98);">.</span>DistributedDataset):
+<span class="ansi-green-intense-fg ansi-bold">    730</span>     dataset <span style="color: rgb(98,98,98);">=</span> <span style="color: rgb(0,135,0);">self</span><span style="color: rgb(98,98,98);">.</span>_distribute_strategy<span style="color: rgb(98,98,98);">.</span>experimental_distribute_dataset(
+<span class="ansi-green-intense-fg ansi-bold">    731</span>         dataset
+<span class="ansi-green-intense-fg ansi-bold">    732</span>     )
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/keras/src/trainers/data_adapters/array_data_adapter.py:124</span>, in <span class="ansi-cyan-fg">ArrayDataAdapter.get_tf_dataset</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">    111</span> num_full_batches <span style="color: rgb(98,98,98);">=</span> <span style="color: rgb(0,135,0);">int</span>(<span style="color: rgb(0,135,0);">self</span><span style="color: rgb(98,98,98);">.</span>_num_samples <span style="color: rgb(98,98,98);">/</span><span style="color: rgb(98,98,98);">/</span> batch_size)
+<span class="ansi-green-intense-fg ansi-bold">    113</span> <span style="color: rgb(95,135,135);"># Vectorized version of shuffle.</span>
+<span class="ansi-green-intense-fg ansi-bold">    114</span> <span style="color: rgb(95,135,135);"># This is a performance improvement over using `from_tensor_slices`.</span>
+<span class="ansi-green-intense-fg ansi-bold">    115</span> <span style="color: rgb(95,135,135);"># The indices of the data are shuffled and batched, and these indices</span>
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">    121</span> <span style="color: rgb(95,135,135);"># 4. optimized permutation batching</span>
+<span class="ansi-green-intense-fg ansi-bold">    122</span> <span style="color: rgb(95,135,135);"># 5. disabled static optimizations</span>
+<span class="ansi-green-fg">--&gt; 124</span> indices_dataset <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg">tf</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">data</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">Dataset</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">range</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">1</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    126</span> <span class="ansi-bold" style="color: rgb(0,135,0);">def</span> <span style="color: rgb(0,0,255);">permutation</span>(_):
+<span class="ansi-green-intense-fg ansi-bold">    127</span>     <span style="color: rgb(95,135,135);"># It turns out to be more performant to make a new set of indices</span>
+<span class="ansi-green-intense-fg ansi-bold">    128</span>     <span style="color: rgb(95,135,135);"># rather than reusing the same range Tensor. (presumably because of</span>
+<span class="ansi-green-intense-fg ansi-bold">    129</span>     <span style="color: rgb(95,135,135);"># buffer forwarding.)</span>
+<span class="ansi-green-intense-fg ansi-bold">    130</span>     indices <span style="color: rgb(98,98,98);">=</span> tf<span style="color: rgb(98,98,98);">.</span>range(num_samples, dtype<span style="color: rgb(98,98,98);">=</span>tf<span style="color: rgb(98,98,98);">.</span>int64)
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/tensorflow/python/data/ops/dataset_ops.py:1022</span>, in <span class="ansi-cyan-fg">DatasetV2.range</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1018</span> <span style="color: rgb(95,135,135);"># Loaded lazily due to a circular dependency (dataset_ops -&gt; range_op -&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1019</span> <span style="color: rgb(95,135,135);"># -&gt; dataset_ops).</span>
+<span class="ansi-green-intense-fg ansi-bold">   1020</span> <span style="color: rgb(95,135,135);"># pylint: disable=g-import-not-at-top,protected-access</span>
+<span class="ansi-green-intense-fg ansi-bold">   1021</span> <span class="ansi-bold" style="color: rgb(0,135,0);">from</span> <span class="ansi-bold" style="color: rgb(0,0,255);">tensorflow</span><span class="ansi-bold" style="color: rgb(0,0,255);">.</span><span class="ansi-bold" style="color: rgb(0,0,255);">python</span><span class="ansi-bold" style="color: rgb(0,0,255);">.</span><span class="ansi-bold" style="color: rgb(0,0,255);">data</span><span class="ansi-bold" style="color: rgb(0,0,255);">.</span><span class="ansi-bold" style="color: rgb(0,0,255);">ops</span> <span class="ansi-bold" style="color: rgb(0,135,0);">import</span> range_op
+<span class="ansi-green-fg">-&gt; 1022</span> <span class="ansi-bold" style="color: rgb(0,135,0);">return</span> <span class="ansi-yellow-bg">range_op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">_range</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/tensorflow/python/data/ops/range_op.py:25</span>, in <span class="ansi-cyan-fg">_range</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     24</span> <span class="ansi-bold" style="color: rgb(0,135,0);">def</span> <span style="color: rgb(0,0,255);">_range</span>(<span style="color: rgb(98,98,98);">*</span>args, <span style="color: rgb(98,98,98);">*</span><span style="color: rgb(98,98,98);">*</span>kwargs):  <span style="color: rgb(95,135,135);"># pylint: disable=unused-private-name</span>
+<span class="ansi-green-fg">---&gt; 25</span>   <span class="ansi-bold" style="color: rgb(0,135,0);">return</span> <span class="ansi-yellow-bg">_RangeDataset</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/tensorflow/python/data/ops/range_op.py:35</span>, in <span class="ansi-cyan-fg">_RangeDataset.__init__</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     33</span> <span style="color: rgb(0,135,0);">self</span><span style="color: rgb(98,98,98);">.</span>_parse_args(<span style="color: rgb(98,98,98);">*</span>args, <span style="color: rgb(98,98,98);">*</span><span style="color: rgb(98,98,98);">*</span>kwargs)
+<span class="ansi-green-intense-fg ansi-bold">     34</span> <span style="color: rgb(0,135,0);">self</span><span style="color: rgb(98,98,98);">.</span>_structure <span style="color: rgb(98,98,98);">=</span> tensor_spec<span style="color: rgb(98,98,98);">.</span>TensorSpec([], <span style="color: rgb(0,135,0);">self</span><span style="color: rgb(98,98,98);">.</span>_output_type)
+<span class="ansi-green-fg">---&gt; 35</span> variant_tensor <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg">gen_dataset_ops</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">range_dataset</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">     36</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">start</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">_start</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">     37</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">stop</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">_stop</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">     38</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">step</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">_step</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">     39</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">*</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0);">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">_common_args</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     40</span> <span style="color: rgb(0,135,0);">super</span>()<span style="color: rgb(98,98,98);">.</span><span style="color: rgb(0,0,255);">__init__</span>(variant_tensor)
+
+File <span class="ansi-green-fg">~/.pyenv/versions/3.11.2/lib/python3.11/site-packages/tensorflow/python/ops/gen_dataset_ops.py:6142</span>, in <span class="ansi-cyan-fg">range_dataset</span><span class="ansi-blue-fg">(start, stop, step, output_types, output_shapes, metadata, replicate_on_split, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">   6140</span> <span class="ansi-bold" style="color: rgb(0,135,0);">if</span> tld<span style="color: rgb(98,98,98);">.</span>is_eager:
+<span class="ansi-green-intense-fg ansi-bold">   6141</span>   <span class="ansi-bold" style="color: rgb(0,135,0);">try</span>:
+<span class="ansi-green-fg">-&gt; 6142</span>     _result <span style="color: rgb(98,98,98);">=</span> <span class="ansi-yellow-bg">pywrap_tfe</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98);">.</span><span class="ansi-yellow-bg">TFE_Py_FastPathExecute</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">   6143</span> <span class="ansi-yellow-bg">      </span><span class="ansi-yellow-bg">_ctx</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">RangeDataset</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">start</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">stop</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">step</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">output_types</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   6144</span> <span class="ansi-yellow-bg">      </span><span class="ansi-yellow-bg">output_types</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">output_shapes</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">output_shapes</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">metadata</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">metadata</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">   6145</span> <span class="ansi-yellow-bg">      </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">replicate_on_split</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0);">&quot;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">replicate_on_split</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   6146</span>     <span class="ansi-bold" style="color: rgb(0,135,0);">return</span> _result
+<span class="ansi-green-intense-fg ansi-bold">   6147</span>   <span class="ansi-bold" style="color: rgb(0,135,0);">except</span> _core<span style="color: rgb(98,98,98);">.</span>_NotOkStatusException <span class="ansi-bold" style="color: rgb(0,135,0);">as</span> e:
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>: </pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[&#160;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">qtrain</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target_model</span><span class="p">,</span> <span class="n">experience</span><span class="p">,</span> <span class="n">maze</span><span class="p">,</span>
+           <span class="n">n_epoch</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+           <span class="n">target_update_freq</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[&#160;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">play_game</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">qmaze</span><span class="p">,</span> <span class="n">pirate_cell</span><span class="p">):</span>
+    <span class="n">qmaze</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">pirate_cell</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">observe</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>  <span class="c1"># greedy</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;win&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIN from&quot;</span><span class="p">,</span> <span class="n">pirate_cell</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;lose&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LOSE from&quot;</span><span class="p">,</span> <span class="n">pirate_cell</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== QUICK EVAL ===&quot;</span><span class="p">)</span>
+<span class="n">starts</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+<span class="n">wins</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">:</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="n">play_game</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TreasureMaze</span><span class="p">(</span><span class="n">maze</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">wins</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ok</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EVAL-WINS: </span><span class="si">{</span><span class="n">wins</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span><span class="si">}</span><span class="s2"> | epsilon=</span><span class="si">{</span><span class="n">epsilon</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SUMMARY:&quot;</span><span class="p">,</span> <span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">wins</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;NEEDS MORE TRAINING&quot;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[&#160;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test one game from the top-left start</span>
+<span class="k">def</span> <span class="nf">play_game</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">qmaze</span><span class="p">,</span> <span class="n">pirate_cell</span><span class="p">):</span>
+    <span class="n">qmaze</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">pirate_cell</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">observe</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>  <span class="c1"># greedy</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">qmaze</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;win&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIN from&quot;</span><span class="p">,</span> <span class="n">pirate_cell</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;lose&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LOSE from&quot;</span><span class="p">,</span> <span class="n">pirate_cell</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test from (0,0):&quot;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">play_game</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TreasureMaze</span><span class="p">(</span><span class="n">maze</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput">
+<h1>Deep Q-Learning Treasure Hunt<a rel="noopener" class="anchor-link" href="#Deep-Q-Learning-Treasure-Hunt">&#182;</a></h1><p><strong>Author:</strong> Nurlan Gasimzade<br/>
+<strong>Course:</strong> CS-370 – Current/Emerging Trends in CS<br/>
+<strong>Date:</strong> October 2025</p>
+<h2>Overview<a rel="noopener" class="anchor-link" href="#Overview">&#182;</a></h2><p>I implemented a Deep Q-Learning (DQN) agent to navigate an 8&#215;8 maze and reach a treasure.</p>
+<p><strong>MDP:</strong></p>
+<ul>
+<li><strong>State:</strong> Flattened 8&#215;8 grid (free, wall, pirate, treasure).</li>
+<li><strong>Actions:</strong> LEFT, UP, RIGHT, DOWN.</li>
+<li><strong>Rewards:</strong> small step penalty (discourages wandering), large penalty for invalid/wall moves, +1 at treasure.</li>
+<li><strong>Termination:</strong> win on treasure, lose on early stop when cumulative reward drops below threshold.</li>
+</ul>
+<h2>Algorithm<a rel="noopener" class="anchor-link" href="#Algorithm">&#182;</a></h2><ul>
+<li><strong>Network:</strong> MLP 128–128–4 (ReLU, linear head for Q-values).</li>
+<li><strong>Replay:</strong> experience buffer with minibatch training.</li>
+<li><strong>Target network:</strong> synchronized every 10 epochs.</li>
+<li><strong>Policy:</strong> ε-greedy with ε=1.0 → 0.05 (decay 0.995).</li>
+<li><strong>Optimizer/Loss:</strong> Adam (1e-3), MSE.</li>
+<li><strong>Discount:</strong> γ=0.95.</li>
+</ul>
+<h2>Training Setup<a rel="noopener" class="anchor-link" href="#Training-Setup">&#182;</a></h2><p><code>n_epoch = 120</code> (short sanity run for this notebook); increase for stronger policy.<br/>
+<strong>Success criteria:</strong> ≥90% win rate over the last window and pass the completion check.</p>
+<h2>Results<a rel="noopener" class="anchor-link" href="#Results">&#182;</a></h2><p>After training (<code>seed=123</code>), ε decayed to ~0.54, losses stabilized, and the agent achieved:</p>
+<ul>
+<li><strong>Multi-start test:</strong> 5 / 5 wins (starts: (0,0), (0,2), (1,2), (2,2), (3,2)).</li>
+<li><strong>Completion check:</strong> passed (agent wins from all free cells tested).</li>
+</ul>
+<p><em>(Update these counts with your actual run if they differ.)</em></p>
+<h2>Reflection<a rel="noopener" class="anchor-link" href="#Reflection">&#182;</a></h2><p><strong>Human vs Agent:</strong> humans use heuristics (scan, mark, backtrack); the agent learns a policy by maximizing expected return via Q-updates.<br/>
+<strong>Limitations/Next steps:</strong> sweep <code>γ</code> and <code>n_epoch</code>, experiment with ε floors (0.01–0.1), and try a dueling or double-DQN variant for stability.</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[&#160;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/2025.9.207/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+						if (document.querySelector('math, .d2l-element, .d2l-cplus-layout') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+							document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+								elm.setAttribute('style', 'display: block; height: 0.5rem;');
+							});
+
+							document.querySelectorAll('math mmultiscripts > none').forEach(elm => {
+								const mrow = document.createElementNS('http://www.w3.org/1998/Math/MathML', 'mrow');
+								elm.replaceWith(mrow);
+							});
+
+							window.D2L.MathJax.loadMathJax({
+								outputScale: 1.5,
+								renderLatex: false,
+								enableMML3Support: false
+							});
+						}
+					});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2025.9.207/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2025.9.207/unbundled/embeds.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					window.D2L.EmbedRenderer.renderEmbeds(document.body);
+				});</script></body></html>
